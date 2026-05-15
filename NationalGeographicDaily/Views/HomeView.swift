@@ -124,31 +124,44 @@ struct HomeView: View {
     // MARK: - Action buttons
 
     private func actionButtons(for entry: PhotoEntry) -> some View {
-        VStack(spacing: 18) {
-            Button {
+        VStack(spacing: 12) {
+            overlayButton(
+                systemImage: isFavorited ? "heart.fill" : "heart",
+                tint: isFavorited ? .red : .white
+            ) {
                 toggleFavorite(for: entry)
-            } label: {
-                Image(systemName: isFavorited ? "heart.fill" : "heart")
-                    .font(.title3)
-                    .foregroundStyle(isFavorited ? Color.red : Color.white)
-                    .symbolEffect(.bounce, value: isFavorited)
             }
+            .symbolEffect(.bounce, value: isFavorited)
             .accessibilityLabel(isFavorited ? "Remove from favorites" : "Add to favorites")
             .accessibilityHint(isFavorited
                 ? "Removes this photo from your favorites collection"
                 : "Saves this photo to your favorites collection")
 
-            Button {
+            overlayButton(systemImage: "square.and.arrow.up", tint: .white) {
                 // Wired in Step 5 — share sheet
-            } label: {
-                Image(systemName: "square.and.arrow.up")
-                    .font(.title3)
-                    .foregroundStyle(.white)
             }
             .accessibilityLabel("Share photo")
             .accessibilityHint("Opens the share sheet for this photo and its story")
         }
-        .padding(.bottom, 4)
+    }
+
+    // Circular frosted-glass button used in the hero overlay.
+    private func overlayButton(
+        systemImage: String,
+        tint: Color,
+        action: @escaping () -> Void
+    ) -> some View {
+        Button(action: action) {
+            Image(systemName: systemImage)
+                .font(.system(size: 18, weight: .semibold))
+                .foregroundStyle(tint)
+                .frame(width: 44, height: 44)
+                .background(
+                    Circle()
+                        .fill(.ultraThinMaterial)
+                        .shadow(color: .black.opacity(0.25), radius: 4, y: 2)
+                )
+        }
     }
 
     // MARK: - Favorites logic
