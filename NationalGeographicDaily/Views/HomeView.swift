@@ -95,7 +95,7 @@ struct HomeView: View {
     }
 
     private func heroOverlay(_ entry: PhotoEntry) -> some View {
-        HStack(alignment: .bottom, spacing: 12) {
+        VStack(alignment: .leading, spacing: 14) {
             VStack(alignment: .leading, spacing: 6) {
                 Text("Photo of the Day")
                     .font(.caption)
@@ -115,16 +115,16 @@ struct HomeView: View {
                     .foregroundStyle(.white.opacity(0.65))
             }
 
-            Spacer(minLength: 0)
-
+            // Action buttons sit left-aligned below the title block
             actionButtons(for: entry)
         }
+        .frame(maxWidth: .infinity, alignment: .leading)
     }
 
     // MARK: - Action buttons
 
     private func actionButtons(for entry: PhotoEntry) -> some View {
-        VStack(spacing: 12) {
+        HStack(spacing: 12) {
             overlayButton(
                 systemImage: isFavorited ? "heart.fill" : "heart",
                 tint: isFavorited ? .red : .white
