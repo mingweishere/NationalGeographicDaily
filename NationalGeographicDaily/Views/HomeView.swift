@@ -137,30 +137,42 @@ struct HomeView: View {
                 ? "Removes this photo from your favorites collection"
                 : "Saves this photo to your favorites collection")
 
-            overlayButton(systemImage: "square.and.arrow.up", tint: .white) {
-                // Wired in Step 5 — share sheet
+            let shareItem = ShareablePhoto(
+                title: entry.title,
+                pageURL: URL(string: "https://www.nationalgeographic.com/photo-of-the-day/")!
+            )
+            ShareLink(
+                item: shareItem,
+                subject: Text(entry.title),
+                message: Text("via National Geographic Photo of the Day")
+            ) {
+                overlayIconLabel(systemImage: "square.and.arrow.up", tint: .white)
             }
             .accessibilityLabel("Share photo")
             .accessibilityHint("Opens the share sheet for this photo and its story")
         }
     }
 
-    // Circular frosted-glass button used in the hero overlay.
+    // Circular frosted-glass badge — used as label for both Button and ShareLink.
+    private func overlayIconLabel(systemImage: String, tint: Color) -> some View {
+        Image(systemName: systemImage)
+            .font(.system(size: 18, weight: .semibold))
+            .foregroundStyle(tint)
+            .frame(width: 44, height: 44)
+            .background(
+                Circle()
+                    .fill(.ultraThinMaterial)
+                    .shadow(color: .black.opacity(0.25), radius: 4, y: 2)
+            )
+    }
+
     private func overlayButton(
         systemImage: String,
         tint: Color,
         action: @escaping () -> Void
     ) -> some View {
         Button(action: action) {
-            Image(systemName: systemImage)
-                .font(.system(size: 18, weight: .semibold))
-                .foregroundStyle(tint)
-                .frame(width: 44, height: 44)
-                .background(
-                    Circle()
-                        .fill(.ultraThinMaterial)
-                        .shadow(color: .black.opacity(0.25), radius: 4, y: 2)
-                )
+            overlayIconLabel(systemImage: systemImage, tint: tint)
         }
     }
 

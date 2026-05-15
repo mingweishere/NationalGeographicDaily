@@ -27,15 +27,29 @@ struct PhotoDetailView: View {
         .navigationBarTitleDisplayMode(.inline)
         .toolbar {
             ToolbarItem(placement: .topBarTrailing) {
-                Button {
-                    modelContext.delete(photo)
-                    dismiss()
-                } label: {
-                    Image(systemName: "heart.slash")
-                        .foregroundStyle(.red)
+                HStack(spacing: 4) {
+                    let shareItem = ShareablePhoto(
+                        title: photo.title,
+                        pageURL: URL(string: "https://www.nationalgeographic.com/photo-of-the-day/")!
+                    )
+                    ShareLink(
+                        item: shareItem,
+                        subject: Text(photo.title),
+                        message: Text("via National Geographic Photo of the Day")
+                    )
+                    .accessibilityLabel("Share photo")
+                    .accessibilityHint("Opens the share sheet for this photo and its story")
+
+                    Button {
+                        modelContext.delete(photo)
+                        dismiss()
+                    } label: {
+                        Image(systemName: "heart.slash")
+                            .foregroundStyle(.red)
+                    }
+                    .accessibilityLabel("Remove from favorites")
+                    .accessibilityHint("Removes this photo from your favorites collection")
                 }
-                .accessibilityLabel("Remove from favorites")
-                .accessibilityHint("Removes this photo from your favorites collection")
             }
         }
     }
