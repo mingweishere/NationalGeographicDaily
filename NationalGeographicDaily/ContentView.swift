@@ -1,21 +1,33 @@
-//
-//  ContentView.swift
-//  NationalGeographicDaily
-//
-//  Created by Mingwei Wei on 5/15/26.
-//
-
 import SwiftUI
 
 struct ContentView: View {
     var body: some View {
-        VStack {
-            Image(systemName: "globe")
-                .imageScale(.large)
-                .foregroundStyle(.tint)
-            Text("Hello, world!")
+        TabView {
+            NavigationStack {
+                Text("Today's Photo")
+                    .navigationTitle("NatGeo Daily")
+            }
+            .tabItem {
+                Label("Today", systemImage: "photo")
+            }
+
+            NavigationStack {
+                Text("Favorites")
+                    .navigationTitle("Favorites")
+            }
+            .tabItem {
+                Label("Favorites", systemImage: "heart.fill")
+            }
+
+            NavigationStack {
+                Text("Settings")
+                    .navigationTitle("Settings")
+            }
+            .tabItem {
+                Label("Settings", systemImage: "gear")
+            }
         }
-        .padding()
+        .tint(.yellow)
     }
 }
 
