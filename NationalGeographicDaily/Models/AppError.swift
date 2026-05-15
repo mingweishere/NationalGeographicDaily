@@ -1,6 +1,6 @@
 import Foundation
 
-enum AppError: Error, LocalizedError, Sendable {
+enum AppError: Error, LocalizedError, Equatable, Sendable {
     case networkUnavailable
     case invalidResponse
     case parsingFailed(String)

@@ -169,7 +169,9 @@ struct HomeView: View {
 
     private func errorView(_ error: AppError) -> some View {
         VStack(spacing: 24) {
-            Image(systemName: "antenna.radiowaves.left.and.right.slash")
+            Image(systemName: error == .networkUnavailable
+                  ? "antenna.radiowaves.left.and.right.slash"
+                  : "exclamationmark.triangle")
                 .font(.system(size: 52))
                 .foregroundStyle(.white.opacity(0.5))
 

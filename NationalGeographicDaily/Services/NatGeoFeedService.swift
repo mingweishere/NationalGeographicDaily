@@ -16,11 +16,24 @@ actor NatGeoFeedService {
     // Throws AppError on network or parse failure.
     func fetchLatestPhoto() async throws -> PhotoEntry {
         do {
-            let (data, response) = try await URLSession.shared.data(from: feedURL)
+            var request = URLRequest(url: feedURL, cachePolicy: .reloadIgnoringLocalCacheData)
+            // Some media servers block the default CFNetwork User-Agent; a
+            // browser-style string ensures the feed is served normally.
+            request.setValue(
+                "Mozilla/5.0 (iPhone; CPU iPhone OS 17_0 like Mac OS X) " +
+                "AppleWebKit/605.1.15 (KHTML, like Gecko) Version/17.0 Mobile/15E148 Safari/604.1",
+                forHTTPHeaderField: "User-Agent"
+            )
+            request.setValue("application/rss+xml, application/xml, text/xml", forHTTPHeaderField: "Accept")
 
-            guard let httpResponse = response as? HTTPURLResponse,
-                  (200...299).contains(httpResponse.statusCode) else {
+            let (data, response) = try await URLSession.shared.data(for: request)
+
+            guard let httpResponse = response as? HTTPURLResponse else {
                 throw AppError.invalidResponse
+            }
+
+            guard (200...299).contains(httpResponse.statusCode) else {
+                throw AppError.parsingFailed("HTTP \(httpResponse.statusCode) from feed server")
             }
 
             let parser = RSSParser()
