@@ -27,7 +27,10 @@ struct HomeView: View {
     private var contentLayer: some View {
         if let entry = viewModel.photoEntry {
             GeometryReader { geo in
-                let heroH = max(360, geo.size.height * 0.60)
+                // Width-based so the 4:3 NatGeo photo crops minimally in
+                // both orientations; capped at 55 % of height so the story
+                // card is always visible without scrolling.
+                let heroH = max(280, min(geo.size.width * 0.75, geo.size.height * 0.55))
                 ScrollView {
                     VStack(spacing: 0) {
                         heroSection(entry, height: heroH)

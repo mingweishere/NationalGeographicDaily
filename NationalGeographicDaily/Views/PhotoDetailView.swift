@@ -13,7 +13,7 @@ struct PhotoDetailView: View {
             Color.black.ignoresSafeArea()
 
             GeometryReader { geo in
-                let heroH = max(320, geo.size.height * 0.55)
+                let heroH = max(280, min(geo.size.width * 0.75, geo.size.height * 0.55))
                 ScrollView {
                     VStack(spacing: 0) {
                         heroSection(height: heroH)
