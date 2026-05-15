@@ -18,7 +18,20 @@ struct HomeView: View {
     @ViewBuilder
     private var contentLayer: some View {
         if let entry = viewModel.photoEntry {
-            photoScrollView(entry)
+            // GeometryReader gives us the real viewport height so the hero
+            // scales correctly across all iPhone sizes.
+            GeometryReader { geo in
+                let heroH = max(360, geo.size.height * 0.60)
+                ScrollView {
+                    VStack(spacing: 0) {
+                        heroSection(entry, height: heroH)
+                        storySection(entry)
+                    }
+                }
+                .ignoresSafeArea(edges: .top)
+                .scrollIndicators(.hidden)
+                .refreshable { await viewModel.loadPhoto() }
+            }
         } else if viewModel.isLoading {
             ProgressView()
                 .progressViewStyle(.circular)
@@ -34,31 +47,20 @@ struct HomeView: View {
         }
     }
 
-    // MARK: - Photo scroll layout
-
-    private func photoScrollView(_ entry: PhotoEntry) -> some View {
-        ScrollView {
-            VStack(spacing: 0) {
-                heroSection(entry)
-                storySection(entry)
-            }
-        }
-        .ignoresSafeArea(edges: .top)
-        .scrollIndicators(.hidden)
-    }
-
     // MARK: - Hero image
 
-    private func heroSection(_ entry: PhotoEntry) -> some View {
+    private func heroSection(_ entry: PhotoEntry, height: CGFloat) -> some View {
         ZStack(alignment: .bottom) {
-            heroImage(entry)
-            heroGradient
+            heroImage(entry, height: height)
+            heroScrim(height: height)
             heroOverlay(entry)
+                .padding(.horizontal, 20)
+                .padding(.bottom, 28)
         }
-        .frame(height: 520)
+        .frame(height: height)
     }
 
-    private func heroImage(_ entry: PhotoEntry) -> some View {
+    private func heroImage(_ entry: PhotoEntry, height: CGFloat) -> some View {
         KFImage(entry.imageURL)
             .resizable()
             .placeholder {
@@ -70,50 +72,48 @@ struct HomeView: View {
             .cancelOnDisappear(true)
             .aspectRatio(contentMode: .fill)
             .frame(maxWidth: .infinity)
-            .frame(height: 520)
+            .frame(height: height)
             .clipped()
             .accessibilityLabel(entry.title)
             .accessibilityAddTraits(.isImage)
     }
 
-    private var heroGradient: some View {
+    private func heroScrim(height: CGFloat) -> some View {
         LinearGradient(
-            colors: [.clear, Color.black.opacity(0.9)],
-            startPoint: UnitPoint(x: 0.5, y: 0.25),
+            colors: [.clear, Color.black.opacity(0.92)],
+            startPoint: UnitPoint(x: 0.5, y: 0.18),
             endPoint: .bottom
         )
-        .frame(height: 520)
+        .frame(height: height)
         .allowsHitTesting(false)
     }
 
     private func heroOverlay(_ entry: PhotoEntry) -> some View {
-        HStack(alignment: .bottom, spacing: 16) {
-            titleBlock(entry)
-            Spacer(minLength: 12)
+        HStack(alignment: .bottom, spacing: 12) {
+            VStack(alignment: .leading, spacing: 6) {
+                Text("Photo of the Day")
+                    .font(.caption)
+                    .fontWeight(.semibold)
+                    .foregroundStyle(.white.opacity(0.7))
+                    .textCase(.uppercase)
+                    .tracking(1.5)
+
+                // fixedSize allows the title to grow to as many lines as needed
+                // rather than being clipped by the ZStack's height constraint.
+                Text(entry.title)
+                    .font(.title2)
+                    .fontWeight(.bold)
+                    .foregroundStyle(.white)
+                    .fixedSize(horizontal: false, vertical: true)
+
+                Text(entry.publicationDate.formatted(date: .long, time: .omitted))
+                    .font(.subheadline)
+                    .foregroundStyle(.white.opacity(0.65))
+            }
+
+            Spacer(minLength: 0)
+
             actionButtons
-        }
-        .padding(.horizontal, 20)
-        .padding(.bottom, 28)
-    }
-
-    private func titleBlock(_ entry: PhotoEntry) -> some View {
-        VStack(alignment: .leading, spacing: 6) {
-            Text("Photo of the Day")
-                .font(.caption)
-                .fontWeight(.semibold)
-                .foregroundStyle(.white.opacity(0.7))
-                .textCase(.uppercase)
-                .tracking(1.5)
-
-            Text(entry.title)
-                .font(.title2)
-                .fontWeight(.bold)
-                .foregroundStyle(.white)
-                .lineLimit(3)
-
-            Text(entry.publicationDate.formatted(date: .long, time: .omitted))
-                .font(.subheadline)
-                .foregroundStyle(.white.opacity(0.65))
         }
     }
 
@@ -139,30 +139,31 @@ struct HomeView: View {
             .accessibilityLabel("Share photo")
             .accessibilityHint("Opens the share sheet for this photo and its story")
         }
+        .padding(.bottom, 4)
     }
 
     // MARK: - Story card
 
     private func storySection(_ entry: PhotoEntry) -> some View {
-        VStack(alignment: .leading, spacing: 0) {
-            Rectangle()
-                .fill(Color.white.opacity(0.08))
-                .frame(height: 1)
+        VStack(alignment: .leading, spacing: 16) {
+            Text("The Story Behind the Photo")
+                .font(.title3)
+                .fontWeight(.semibold)
+                .foregroundStyle(.primary)
 
-            VStack(alignment: .leading, spacing: 16) {
-                Text("The Story Behind the Photo")
-                    .font(.headline)
-                    .foregroundStyle(.primary)
+            Divider()
 
-                Text(entry.description.isEmpty ? "No description available for this photo." : entry.description)
-                    .font(.body)
-                    .foregroundStyle(.secondary)
-                    .lineSpacing(6)
-            }
-            .padding(20)
+            Text(entry.description.isEmpty
+                 ? "Visit nationalgeographic.com to read the full story behind today's photo."
+                 : entry.description)
+                .font(.body)
+                .foregroundStyle(.secondary)
+                .lineSpacing(6)
         }
-        .background(Color(.systemBackground))
+        .padding(.horizontal, 20)
+        .padding(.vertical, 24)
         .frame(maxWidth: .infinity, alignment: .leading)
+        .background(Color(.systemBackground))
     }
 
     // MARK: - Error state
