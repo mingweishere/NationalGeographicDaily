@@ -12,12 +12,18 @@
 
 /* Begin PBXFileReference section */
 		FEFF03442FB7841D00728AA2 /* NationalGeographicDaily.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = NationalGeographicDaily.app; sourceTree = BUILT_PRODUCTS_DIR; };
+		BB000000000000000000BB08 /* NationalGeographicDailyTests.xctest */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = NationalGeographicDailyTests.xctest; sourceTree = BUILT_PRODUCTS_DIR; };
 /* End PBXFileReference section */
 
 /* Begin PBXFileSystemSynchronizedRootGroup section */
 		FEFF03462FB7841D00728AA2 /* NationalGeographicDaily */ = {
 			isa = PBXFileSystemSynchronizedRootGroup;
 			path = NationalGeographicDaily;
+			sourceTree = "<group>";
+		};
+		BB000000000000000000BB07 /* NationalGeographicDailyTests */ = {
+			isa = PBXFileSystemSynchronizedRootGroup;
+			path = NationalGeographicDailyTests;
 			sourceTree = "<group>";
 		};
 /* End PBXFileSystemSynchronizedRootGroup section */
@@ -28,6 +34,13 @@
 			buildActionMask = 2147483647;
 			files = (
 				AA000000000000000000AA03 /* Kingfisher in Frameworks */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+		BB000000000000000000BB03 /* Frameworks (Tests) */ = {
+			isa = PBXFrameworksBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -46,6 +59,7 @@
 			isa = PBXGroup;
 			children = (
 				FEFF03442FB7841D00728AA2 /* NationalGeographicDaily.app */,
+				BB000000000000000000BB08 /* NationalGeographicDailyTests.xctest */,
 			);
 			name = Products;
 			sourceTree = "<group>";
@@ -76,6 +90,27 @@
 			productReference = FEFF03442FB7841D00728AA2 /* NationalGeographicDaily.app */;
 			productType = "com.apple.product-type.application";
 		};
+		BB000000000000000000BB01 /* NationalGeographicDailyTests */ = {
+			isa = PBXNativeTarget;
+			buildConfigurationList = BB000000000000000000BB05 /* Build configuration list for PBXNativeTarget "NationalGeographicDailyTests" */;
+			buildPhases = (
+				BB000000000000000000BB02 /* Sources */,
+				BB000000000000000000BB03 /* Frameworks (Tests) */,
+				BB000000000000000000BB04 /* Resources */,
+			);
+			buildRules = (
+			);
+			dependencies = (
+				BB000000000000000000BB06 /* PBXTargetDependency */,
+			);
+			fileSystemSynchronizedGroups = (
+				BB000000000000000000BB07 /* NationalGeographicDailyTests */,
+			);
+			name = NationalGeographicDailyTests;
+			productName = NationalGeographicDailyTests;
+			productReference = BB000000000000000000BB08 /* NationalGeographicDailyTests.xctest */;
+			productType = "com.apple.product-type.bundle.unit-test";
+		};
 /* End PBXNativeTarget section */
 
 /* Begin PBXProject section */
@@ -88,6 +123,10 @@
 				TargetAttributes = {
 					FEFF03432FB7841D00728AA2 = {
 						CreatedOnToolsVersion = 26.5;
+					};
+					BB000000000000000000BB01 = {
+						CreatedOnToolsVersion = 26.5;
+						TestTargetID = FEFF03432FB7841D00728AA2;
 					};
 				};
 			};
@@ -109,12 +148,38 @@
 			projectRoot = "";
 			targets = (
 				FEFF03432FB7841D00728AA2 /* NationalGeographicDaily */,
+				BB000000000000000000BB01 /* NationalGeographicDailyTests */,
 			);
 		};
 /* End PBXProject section */
 
+/* Begin PBXContainerItemProxy section */
+		BB000000000000000000BB09 /* PBXContainerItemProxy */ = {
+			isa = PBXContainerItemProxy;
+			containerPortal = FEFF033C2FB7841D00728AA2 /* Project object */;
+			proxyType = 1;
+			remoteGlobalIDString = FEFF03432FB7841D00728AA2;
+			remoteInfo = NationalGeographicDaily;
+		};
+/* End PBXContainerItemProxy section */
+
+/* Begin PBXTargetDependency section */
+		BB000000000000000000BB06 /* PBXTargetDependency */ = {
+			isa = PBXTargetDependency;
+			target = FEFF03432FB7841D00728AA2 /* NationalGeographicDaily */;
+			targetProxy = BB000000000000000000BB09 /* PBXContainerItemProxy */;
+		};
+/* End PBXTargetDependency section */
+
 /* Begin PBXResourcesBuildPhase section */
 		FEFF03422FB7841D00728AA2 /* Resources */ = {
+			isa = PBXResourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+		BB000000000000000000BB04 /* Resources (Tests) */ = {
 			isa = PBXResourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
@@ -125,6 +190,13 @@
 
 /* Begin PBXSourcesBuildPhase section */
 		FEFF03402FB7841D00728AA2 /* Sources */ = {
+			isa = PBXSourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+		BB000000000000000000BB02 /* Sources (Tests) */ = {
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
@@ -334,6 +406,44 @@
 			};
 			name = Release;
 		};
+		BB000000000000000000BB0A /* Debug (Tests) */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				BUNDLE_LOADER = "$(TEST_HOST)";
+				CODE_SIGN_STYLE = Automatic;
+				CURRENT_PROJECT_VERSION = 1;
+				GENERATE_INFOPLIST_FILE = YES;
+				IPHONEOS_DEPLOYMENT_TARGET = 26.5;
+				MARKETING_VERSION = 1.0;
+				PRODUCT_BUNDLE_IDENTIFIER = Mingwei.NationalGeographicDailyTests;
+				PRODUCT_NAME = "$(TARGET_NAME)";
+				SWIFT_APPROACHABLE_CONCURRENCY = YES;
+				SWIFT_DEFAULT_ACTOR_ISOLATION = MainActor;
+				SWIFT_VERSION = 5.0;
+				TARGETED_DEVICE_FAMILY = "1,2";
+				TEST_HOST = "$(BUILT_PRODUCTS_DIR)/NationalGeographicDaily.app/$(BUNDLE_EXECUTABLE_FOLDER_PATH)/NationalGeographicDaily";
+			};
+			name = Debug;
+		};
+		BB000000000000000000BB0B /* Release (Tests) */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				BUNDLE_LOADER = "$(TEST_HOST)";
+				CODE_SIGN_STYLE = Automatic;
+				CURRENT_PROJECT_VERSION = 1;
+				GENERATE_INFOPLIST_FILE = YES;
+				IPHONEOS_DEPLOYMENT_TARGET = 26.5;
+				MARKETING_VERSION = 1.0;
+				PRODUCT_BUNDLE_IDENTIFIER = Mingwei.NationalGeographicDailyTests;
+				PRODUCT_NAME = "$(TARGET_NAME)";
+				SWIFT_APPROACHABLE_CONCURRENCY = YES;
+				SWIFT_DEFAULT_ACTOR_ISOLATION = MainActor;
+				SWIFT_VERSION = 5.0;
+				TARGETED_DEVICE_FAMILY = "1,2";
+				TEST_HOST = "$(BUILT_PRODUCTS_DIR)/NationalGeographicDaily.app/$(BUNDLE_EXECUTABLE_FOLDER_PATH)/NationalGeographicDaily";
+			};
+			name = Release;
+		};
 /* End XCBuildConfiguration section */
 
 /* Begin XCConfigurationList section */
@@ -351,6 +461,15 @@
 			buildConfigurations = (
 				FEFF03502FB7841E00728AA2 /* Debug */,
 				FEFF03512FB7841E00728AA2 /* Release */,
+			);
+			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Release;
+		};
+		BB000000000000000000BB05 /* Build configuration list for PBXNativeTarget "NationalGeographicDailyTests" */ = {
+			isa = XCConfigurationList;
+			buildConfigurations = (
+				BB000000000000000000BB0A /* Debug (Tests) */,
+				BB000000000000000000BB0B /* Release (Tests) */,
 			);
 			defaultConfigurationIsVisible = 0;
 			defaultConfigurationName = Release;
