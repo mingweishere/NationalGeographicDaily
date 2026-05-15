@@ -48,6 +48,7 @@ struct FavoritesView: View {
             Image(systemName: "heart.slash")
                 .font(.system(size: 52))
                 .foregroundStyle(.secondary)
+                .accessibilityHidden(true)
 
             Text("No Favorites Yet")
                 .font(.title3)

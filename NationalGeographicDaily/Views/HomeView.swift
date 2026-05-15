@@ -43,6 +43,7 @@ struct HomeView: View {
                 .progressViewStyle(.circular)
                 .tint(.white)
                 .scaleEffect(1.4)
+                .accessibilityLabel("Loading today's photo")
         } else if let err = viewModel.error {
             errorView(err)
         } else {
@@ -50,6 +51,7 @@ struct HomeView: View {
                 .progressViewStyle(.circular)
                 .tint(.white)
                 .scaleEffect(1.4)
+                .accessibilityLabel("Loading today's photo")
         }
     }
 
@@ -92,6 +94,7 @@ struct HomeView: View {
         )
         .frame(height: height)
         .allowsHitTesting(false)
+        .accessibilityHidden(true)
     }
 
     private func heroOverlay(_ entry: PhotoEntry) -> some View {
@@ -235,6 +238,7 @@ struct HomeView: View {
                   : "exclamationmark.triangle")
                 .font(.system(size: 52))
                 .foregroundStyle(.white.opacity(0.5))
+                .accessibilityHidden(true)
 
             VStack(spacing: 8) {
                 Text("Couldn't Load Photo")

@@ -78,6 +78,7 @@ struct PhotoDetailView: View {
             )
             .frame(height: height)
             .allowsHitTesting(false)
+            .accessibilityHidden(true)
 
             VStack(alignment: .leading, spacing: 6) {
                 Text("National Geographic")
