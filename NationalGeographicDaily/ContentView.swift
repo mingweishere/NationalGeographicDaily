@@ -11,8 +11,7 @@ struct ContentView: View {
             }
 
             NavigationStack {
-                Text("Favorites")
-                    .navigationTitle("Favorites")
+                FavoritesView()
             }
             .tabItem {
                 Label("Favorites", systemImage: "heart.fill")

@@ -1,8 +1,11 @@
 import SwiftUI
+import SwiftData
 import Kingfisher
 
 struct HomeView: View {
     @State private var viewModel = HomeViewModel()
+    @State private var isFavorited = false
+    @Environment(\.modelContext) private var modelContext
 
     var body: some View {
         ZStack {
@@ -11,6 +14,11 @@ struct HomeView: View {
         }
         .toolbar(.hidden, for: .navigationBar)
         .task { await viewModel.loadPhoto() }
+        // Re-check favorite status whenever the displayed photo changes
+        .task(id: viewModel.photoEntry?.id) {
+            guard let entry = viewModel.photoEntry else { return }
+            checkFavoriteStatus(for: entry)
+        }
     }
 
     // MARK: - Content routing
@@ -18,8 +26,6 @@ struct HomeView: View {
     @ViewBuilder
     private var contentLayer: some View {
         if let entry = viewModel.photoEntry {
-            // GeometryReader gives us the real viewport height so the hero
-            // scales correctly across all iPhone sizes.
             GeometryReader { geo in
                 let heroH = max(360, geo.size.height * 0.60)
                 ScrollView {
@@ -98,8 +104,6 @@ struct HomeView: View {
                     .textCase(.uppercase)
                     .tracking(1.5)
 
-                // fixedSize allows the title to grow to as many lines as needed
-                // rather than being clipped by the ZStack's height constraint.
                 Text(entry.title)
                     .font(.title2)
                     .fontWeight(.bold)
@@ -113,21 +117,26 @@ struct HomeView: View {
 
             Spacer(minLength: 0)
 
-            actionButtons
+            actionButtons(for: entry)
         }
     }
 
-    private var actionButtons: some View {
+    // MARK: - Action buttons
+
+    private func actionButtons(for entry: PhotoEntry) -> some View {
         VStack(spacing: 18) {
             Button {
-                // Wired in Step 4 — favorites
+                toggleFavorite(for: entry)
             } label: {
-                Image(systemName: "heart")
+                Image(systemName: isFavorited ? "heart.fill" : "heart")
                     .font(.title3)
-                    .foregroundStyle(.white)
+                    .foregroundStyle(isFavorited ? Color.red : Color.white)
+                    .symbolEffect(.bounce, value: isFavorited)
             }
-            .accessibilityLabel("Add to favorites")
-            .accessibilityHint("Saves this photo to your favorites collection")
+            .accessibilityLabel(isFavorited ? "Remove from favorites" : "Add to favorites")
+            .accessibilityHint(isFavorited
+                ? "Removes this photo from your favorites collection"
+                : "Saves this photo to your favorites collection")
 
             Button {
                 // Wired in Step 5 — share sheet
@@ -140,6 +149,36 @@ struct HomeView: View {
             .accessibilityHint("Opens the share sheet for this photo and its story")
         }
         .padding(.bottom, 4)
+    }
+
+    // MARK: - Favorites logic
+
+    private func checkFavoriteStatus(for entry: PhotoEntry) {
+        let id = entry.id
+        let descriptor = FetchDescriptor<FavoritePhoto>(
+            predicate: #Predicate { $0.id == id }
+        )
+        isFavorited = ((try? modelContext.fetchCount(descriptor)) ?? 0) > 0
+    }
+
+    private func toggleFavorite(for entry: PhotoEntry) {
+        UIImpactFeedbackGenerator(style: .medium).impactOccurred()
+
+        let id = entry.id
+        if isFavorited {
+            let descriptor = FetchDescriptor<FavoritePhoto>(
+                predicate: #Predicate { $0.id == id }
+            )
+            if let matches = try? modelContext.fetch(descriptor) {
+                matches.forEach { modelContext.delete($0) }
+            }
+        } else {
+            modelContext.insert(FavoritePhoto(from: entry))
+        }
+
+        withAnimation(.spring(response: 0.3, dampingFraction: 0.6)) {
+            isFavorited.toggle()
+        }
     }
 
     // MARK: - Story card

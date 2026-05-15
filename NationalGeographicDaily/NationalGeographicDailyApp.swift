@@ -1,4 +1,5 @@
 import SwiftUI
+import SwiftData
 
 @main
 struct NationalGeographicDailyApp: App {
@@ -7,5 +8,6 @@ struct NationalGeographicDailyApp: App {
             ContentView()
                 .preferredColorScheme(.dark)
         }
+        .modelContainer(for: FavoritePhoto.self)
     }
 }
