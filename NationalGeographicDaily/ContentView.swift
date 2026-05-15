@@ -4,8 +4,7 @@ struct ContentView: View {
     var body: some View {
         TabView {
             NavigationStack {
-                Text("Today's Photo")
-                    .navigationTitle("NatGeo Daily")
+                HomeView()
             }
             .tabItem {
                 Label("Today", systemImage: "photo")
