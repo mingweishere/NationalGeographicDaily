@@ -137,12 +137,8 @@ struct HomeView: View {
                 ? "Removes this photo from your favorites collection"
                 : "Saves this photo to your favorites collection")
 
-            let shareItem = ShareablePhoto(
-                title: entry.title,
-                pageURL: URL(string: "https://www.nationalgeographic.com/photo-of-the-day/")!
-            )
             ShareLink(
-                item: shareItem,
+                item: URL(string: "https://www.nationalgeographic.com/photo-of-the-day/")!,
                 subject: Text(entry.title),
                 message: Text("via National Geographic Photo of the Day")
             ) {

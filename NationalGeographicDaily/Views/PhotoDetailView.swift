@@ -28,12 +28,8 @@ struct PhotoDetailView: View {
         .toolbar {
             ToolbarItem(placement: .topBarTrailing) {
                 HStack(spacing: 4) {
-                    let shareItem = ShareablePhoto(
-                        title: photo.title,
-                        pageURL: URL(string: "https://www.nationalgeographic.com/photo-of-the-day/")!
-                    )
                     ShareLink(
-                        item: shareItem,
+                        item: URL(string: "https://www.nationalgeographic.com/photo-of-the-day/")!,
                         subject: Text(photo.title),
                         message: Text("via National Geographic Photo of the Day")
                     )
