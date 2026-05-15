@@ -14,7 +14,6 @@ struct HomeView: View {
         }
         .toolbar(.hidden, for: .navigationBar)
         .task { await viewModel.loadPhoto() }
-        // Re-check favorite status whenever the displayed photo changes
         .task(id: viewModel.photoEntry?.id) {
             guard let entry = viewModel.photoEntry else { return }
             checkFavoriteStatus(for: entry)
@@ -26,21 +25,18 @@ struct HomeView: View {
     @ViewBuilder
     private var contentLayer: some View {
         if let entry = viewModel.photoEntry {
-            GeometryReader { geo in
-                // Width-based so the 4:3 NatGeo photo crops minimally in
-                // both orientations; capped at 55 % of height so the story
-                // card is always visible without scrolling.
-                let heroH = max(280, min(geo.size.width * 0.75, geo.size.height * 0.55))
-                ScrollView {
-                    VStack(spacing: 0) {
-                        heroSection(entry, height: heroH)
-                        storySection(entry)
-                    }
+            // ScrollView is NOT wrapped in GeometryReader so its width is
+            // determined by its own safe-area-respecting bounds, not the
+            // inflated size reported by a GeometryReader inside the ZStack.
+            ScrollView {
+                VStack(spacing: 0) {
+                    heroSection(entry)
+                    storySection(entry)
                 }
-                .ignoresSafeArea(edges: .top)
-                .scrollIndicators(.hidden)
-                .refreshable { await viewModel.loadPhoto() }
             }
+            .ignoresSafeArea(edges: .top)
+            .scrollIndicators(.hidden)
+            .refreshable { await viewModel.loadPhoto() }
         } else if viewModel.isLoading {
             ProgressView()
                 .progressViewStyle(.circular)
@@ -60,22 +56,26 @@ struct HomeView: View {
 
     // MARK: - Hero image
 
-    private func heroSection(_ entry: PhotoEntry, height: CGFloat) -> some View {
-        ZStack(alignment: .bottom) {
-            heroImage(entry, height: height)
-            heroScrim(height: height)
+    // GeometryReader is constrained to a 4:3 frame so proxy.size reflects
+    // the actual content width, not the full screen width including safe areas.
+    private func heroSection(_ entry: PhotoEntry) -> some View {
+        GeometryReader { proxy in
+            let h = proxy.size.height // == width * 0.75 from aspectRatio below
+            ZStack(alignment: .bottom) {
+                heroImage(entry, width: proxy.size.width, height: h)
+                heroScrim(height: h)
+            }
+            .frame(width: proxy.size.width, height: h)
+            .overlay(alignment: .bottom) {
+                heroOverlay(entry)
+                    .padding(.horizontal, 20)
+                    .padding(.bottom, 28)
+            }
         }
-        .frame(height: height)
-        // Overlay rendered outside the ZStack's bounds so long titles
-        // are never clipped by the fixed hero height.
-        .overlay(alignment: .bottom) {
-            heroOverlay(entry)
-                .padding(.horizontal, 20)
-                .padding(.bottom, 28)
-        }
+        .aspectRatio(4.0 / 3.0, contentMode: .fit)
     }
 
-    private func heroImage(_ entry: PhotoEntry, height: CGFloat) -> some View {
+    private func heroImage(_ entry: PhotoEntry, width: CGFloat, height: CGFloat) -> some View {
         KFImage(entry.imageURL)
             .resizable()
             .placeholder {
@@ -86,8 +86,7 @@ struct HomeView: View {
             .fade(duration: 0.3)
             .cancelOnDisappear(true)
             .aspectRatio(contentMode: .fill)
-            .frame(maxWidth: .infinity)
-            .frame(height: height)
+            .frame(width: width, height: height)
             .clipped()
             .accessibilityLabel(entry.title)
             .accessibilityAddTraits(.isImage)
@@ -125,7 +124,6 @@ struct HomeView: View {
                     .foregroundStyle(.white.opacity(0.65))
             }
 
-            // Action buttons sit left-aligned below the title block
             actionButtons(for: entry)
         }
         .frame(maxWidth: .infinity, alignment: .leading)
@@ -159,7 +157,6 @@ struct HomeView: View {
         }
     }
 
-    // Circular frosted-glass badge — used as label for both Button and ShareLink.
     private func overlayIconLabel(systemImage: String, tint: Color) -> some View {
         Image(systemName: systemImage)
             .font(.system(size: 18, weight: .semibold))

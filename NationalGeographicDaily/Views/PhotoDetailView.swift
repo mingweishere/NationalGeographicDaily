@@ -12,17 +12,14 @@ struct PhotoDetailView: View {
         ZStack {
             Color.black.ignoresSafeArea()
 
-            GeometryReader { geo in
-                let heroH = max(280, min(geo.size.width * 0.75, geo.size.height * 0.55))
-                ScrollView {
-                    VStack(spacing: 0) {
-                        heroSection(height: heroH)
-                        storySection
-                    }
+            ScrollView {
+                VStack(spacing: 0) {
+                    heroSection
+                    storySection
                 }
-                .ignoresSafeArea(edges: .top)
-                .scrollIndicators(.hidden)
             }
+            .ignoresSafeArea(edges: .top)
+            .scrollIndicators(.hidden)
         }
         .navigationBarTitleDisplayMode(.inline)
         .toolbar {
@@ -52,57 +49,61 @@ struct PhotoDetailView: View {
 
     // MARK: - Hero
 
-    private func heroSection(height: CGFloat) -> some View {
-        ZStack(alignment: .bottom) {
-            Group {
-                if let url = photo.imageURL {
-                    KFImage(url)
-                        .resizable()
-                        .placeholder { Rectangle().fill(Color(.systemGray6)) }
-                        .fade(duration: 0.3)
-                        .aspectRatio(contentMode: .fill)
-                } else {
-                    Rectangle().fill(Color(.systemGray6))
+    private var heroSection: some View {
+        GeometryReader { proxy in
+            let h = proxy.size.height
+            ZStack(alignment: .bottom) {
+                Group {
+                    if let url = photo.imageURL {
+                        KFImage(url)
+                            .resizable()
+                            .placeholder { Rectangle().fill(Color(.systemGray6)) }
+                            .fade(duration: 0.3)
+                            .aspectRatio(contentMode: .fill)
+                    } else {
+                        Rectangle().fill(Color(.systemGray6))
+                            .accessibilityHidden(true)
+                    }
                 }
+                .frame(width: proxy.size.width, height: h)
+                .clipped()
+                .accessibilityLabel(photo.title)
+                .accessibilityAddTraits(.isImage)
+
+                LinearGradient(
+                    colors: [.clear, Color.black.opacity(0.92)],
+                    startPoint: UnitPoint(x: 0.5, y: 0.18),
+                    endPoint: .bottom
+                )
+                .frame(height: h)
+                .allowsHitTesting(false)
+                .accessibilityHidden(true)
+
+                VStack(alignment: .leading, spacing: 6) {
+                    Text("National Geographic")
+                        .font(.caption)
+                        .fontWeight(.semibold)
+                        .foregroundStyle(.white.opacity(0.7))
+                        .textCase(.uppercase)
+                        .tracking(1.5)
+
+                    Text(photo.title)
+                        .font(.title2)
+                        .fontWeight(.bold)
+                        .foregroundStyle(.white)
+                        .fixedSize(horizontal: false, vertical: true)
+
+                    Text(photo.publicationDate.formatted(date: .long, time: .omitted))
+                        .font(.subheadline)
+                        .foregroundStyle(.white.opacity(0.65))
+                }
+                .frame(maxWidth: .infinity, alignment: .leading)
+                .padding(.horizontal, 20)
+                .padding(.bottom, 28)
             }
-            .frame(maxWidth: .infinity)
-            .frame(height: height)
-            .clipped()
-            .accessibilityLabel(photo.title)
-            .accessibilityAddTraits(.isImage)
-
-            LinearGradient(
-                colors: [.clear, Color.black.opacity(0.92)],
-                startPoint: UnitPoint(x: 0.5, y: 0.18),
-                endPoint: .bottom
-            )
-            .frame(height: height)
-            .allowsHitTesting(false)
-            .accessibilityHidden(true)
-
-            VStack(alignment: .leading, spacing: 6) {
-                Text("National Geographic")
-                    .font(.caption)
-                    .fontWeight(.semibold)
-                    .foregroundStyle(.white.opacity(0.7))
-                    .textCase(.uppercase)
-                    .tracking(1.5)
-
-                Text(photo.title)
-                    .font(.title2)
-                    .fontWeight(.bold)
-                    .foregroundStyle(.white)
-                    .fixedSize(horizontal: false, vertical: true)
-
-                Text(photo.publicationDate.formatted(date: .long, time: .omitted))
-                    .font(.subheadline)
-                    .foregroundStyle(.white.opacity(0.65))
-            }
-            .frame(maxWidth: .infinity, alignment: .leading)
-            .padding(.horizontal, 20)
-            .padding(.bottom, 28)
+            .frame(width: proxy.size.width, height: h)
         }
-        .frame(height: height)
+        .aspectRatio(4.0 / 3.0, contentMode: .fit)
     }
 
     // MARK: - Story
