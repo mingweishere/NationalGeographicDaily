@@ -1,0 +1,8 @@
+# Gemini API key — never commit this file
+NationalGeographicDaily/Resources/Config.plist
+
+# Xcode
+*.xcuserstate
+xcuserdata/
+DerivedData/
+.build/

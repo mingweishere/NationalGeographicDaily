@@ -5,6 +5,7 @@ import Kingfisher
 struct HomeView: View {
     @State private var viewModel = HomeViewModel()
     @State private var isFavorited = false
+    @State private var showExplainer = false
     @Environment(\.modelContext) private var modelContext
 
     var body: some View {
@@ -17,6 +18,12 @@ struct HomeView: View {
         .task(id: viewModel.photoEntry?.id) {
             guard let entry = viewModel.photoEntry else { return }
             checkFavoriteStatus(for: entry)
+        }
+        .sheet(isPresented: $showExplainer) {
+            if let entry = viewModel.photoEntry {
+                StoryExplainerView(title: entry.title, story: entry.description)
+                    .presentationDetents([.medium, .large])
+            }
         }
     }
 
@@ -226,6 +233,19 @@ struct HomeView: View {
                 .font(.body)
                 .foregroundStyle(.secondary)
                 .lineSpacing(6)
+
+            Button {
+                showExplainer = true
+            } label: {
+                Label("Tell me more", systemImage: "sparkles")
+                    .frame(maxWidth: .infinity)
+            }
+            .buttonStyle(.bordered)
+            .tint(.yellow)
+            .disabled(showExplainer)
+            .padding(.top, 4)
+            .accessibilityLabel("Tell me more")
+            .accessibilityHint("Opens an AI-powered deeper explanation of this photo's story")
         }
         .padding(.horizontal, 20)
         .padding(.vertical, 24)

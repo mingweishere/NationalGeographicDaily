@@ -5,6 +5,7 @@ enum AppError: Error, LocalizedError, Equatable, Sendable {
     case invalidResponse
     case parsingFailed(String)
     case noData
+    case aiExplainerFailed(String)
 
     var errorDescription: String? {
         switch self {
@@ -16,6 +17,8 @@ enum AppError: Error, LocalizedError, Equatable, Sendable {
             return "Could not read the photo feed: \(detail)"
         case .noData:
             return "No photo is available yet. Please try again later."
+        case .aiExplainerFailed(let detail):
+            return detail
         }
     }
 }
