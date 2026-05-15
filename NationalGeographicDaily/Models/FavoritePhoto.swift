@@ -20,4 +20,14 @@ final class FavoritePhoto {
     }
 
     var imageURL: URL? { URL(string: imageURLString) }
+
+    var asPhotoEntry: PhotoEntry {
+        PhotoEntry(
+            id: id,
+            title: title,
+            publicationDate: publicationDate,
+            imageURL: URL(string: imageURLString) ?? URL(string: "https://www.nationalgeographic.com")!,
+            description: photoDescription
+        )
+    }
 }

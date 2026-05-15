@@ -6,6 +6,7 @@ struct HomeView: View {
     @State private var viewModel = HomeViewModel()
     @State private var isFavorited = false
     @State private var showExplainer = false
+    @State private var showViewer = false
     @Environment(\.modelContext) private var modelContext
 
     var body: some View {
@@ -25,6 +26,11 @@ struct HomeView: View {
                     .presentationDetents([.medium, .large])
             }
         }
+        .fullScreenCover(isPresented: $showViewer) {
+            if let entry = viewModel.photoEntry {
+                ImmersiveViewerView(entry: entry)
+            }
+        }
     }
 
     // MARK: - Content routing
@@ -38,6 +44,9 @@ struct HomeView: View {
             ScrollView {
                 VStack(spacing: 0) {
                     heroSection(entry)
+                        .onTapGesture { showViewer = true }
+                        .accessibilityAddTraits(.isButton)
+                        .accessibilityHint("Opens full-screen immersive view")
                     storySection(entry)
                 }
             }

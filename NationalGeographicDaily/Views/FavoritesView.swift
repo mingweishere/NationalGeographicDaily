@@ -6,6 +6,8 @@ struct FavoritesView: View {
     @Query(sort: \FavoritePhoto.savedDate, order: .reverse)
     private var favorites: [FavoritePhoto]
 
+    @State private var viewerPhoto: PhotoEntry?
+
     private let columns = [
         GridItem(.flexible(), spacing: 2),
         GridItem(.flexible(), spacing: 2),
@@ -21,6 +23,9 @@ struct FavoritesView: View {
         }
         .navigationTitle("Favorites")
         .navigationBarTitleDisplayMode(.large)
+        .fullScreenCover(item: $viewerPhoto) { entry in
+            ImmersiveViewerView(entry: entry)
+        }
     }
 
     // MARK: - Gallery
@@ -35,6 +40,19 @@ struct FavoritesView: View {
                         FavoriteCell(photo: photo)
                     }
                     .buttonStyle(.plain)
+                    .overlay(alignment: .topTrailing) {
+                        Button {
+                            viewerPhoto = photo.asPhotoEntry
+                        } label: {
+                            Image(systemName: "arrow.up.left.and.arrow.down.right")
+                                .font(.system(size: 12, weight: .semibold))
+                                .foregroundStyle(.white)
+                                .padding(7)
+                                .background(Circle().fill(.ultraThinMaterial))
+                        }
+                        .padding(6)
+                        .accessibilityLabel("View \(photo.title) full screen")
+                    }
                 }
             }
         }
