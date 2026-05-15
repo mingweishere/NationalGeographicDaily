@@ -61,11 +61,15 @@ struct HomeView: View {
         ZStack(alignment: .bottom) {
             heroImage(entry, height: height)
             heroScrim(height: height)
+        }
+        .frame(height: height)
+        // Overlay rendered outside the ZStack's bounds so long titles
+        // are never clipped by the fixed hero height.
+        .overlay(alignment: .bottom) {
             heroOverlay(entry)
                 .padding(.horizontal, 20)
                 .padding(.bottom, 28)
         }
-        .frame(height: height)
     }
 
     private func heroImage(_ entry: PhotoEntry, height: CGFloat) -> some View {

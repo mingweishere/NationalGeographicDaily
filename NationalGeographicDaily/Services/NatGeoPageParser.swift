@@ -8,8 +8,21 @@ import Foundation
 final class NatGeoPageParser {
 
     nonisolated func parse(html: String) -> PhotoEntry? {
-        if let entry = parseJSONLD(html) { return entry }
-        return parseOpenGraph(html)
+        let base = parseJSONLD(html) ?? parseOpenGraph(html)
+        guard let base else { return nil }
+
+        // Meta descriptions are typically 1-2 sentences; try to get the full body.
+        guard base.description.count < 200 else { return base }
+        let body = extractBodyParagraphs(html)
+        guard !body.isEmpty else { return base }
+
+        return PhotoEntry(
+            id: base.id,
+            title: base.title,
+            publicationDate: base.publicationDate,
+            imageURL: base.imageURL,
+            description: body
+        )
     }
 
     // MARK: - JSON-LD
@@ -123,6 +136,46 @@ final class NatGeoPageParser {
             return String(html[range])
         }
         return nil
+    }
+
+    // MARK: - Body paragraph extraction (Strategy 3)
+
+    // Collects substantive <p> tags from the page body.
+    // Short strings (<80 chars) are nav links / captions and are skipped.
+    nonisolated private func extractBodyParagraphs(_ html: String) -> String {
+        let pattern = #"<p(?:\s[^>]*)?>(.+?)</p>"#
+        guard let rx = try? NSRegularExpression(
+            pattern: pattern,
+            options: [.caseInsensitive, .dotMatchesLineSeparators]
+        ) else { return "" }
+
+        let ns = html as NSString
+        let matches = rx.matches(in: html, range: NSRange(location: 0, length: ns.length))
+
+        var paragraphs: [String] = []
+        for match in matches {
+            guard match.numberOfRanges > 1,
+                  let r = Range(match.range(at: 1), in: html) else { continue }
+
+            let text = decodeEntities(
+                stripHTML(String(html[r]))
+                    .trimmingCharacters(in: .whitespacesAndNewlines)
+            )
+            guard text.count > 80 else { continue }
+            paragraphs.append(text)
+            if paragraphs.count == 6 { break }
+        }
+        return paragraphs.joined(separator: "\n\n")
+    }
+
+    nonisolated private func stripHTML(_ s: String) -> String {
+        guard let rx = try? NSRegularExpression(pattern: #"<[^>]+>"#) else { return s }
+        let result = rx.stringByReplacingMatches(
+            in: s,
+            range: NSRange(location: 0, length: (s as NSString).length),
+            withTemplate: " "
+        )
+        return result.replacingOccurrences(of: #" {2,}"#, with: " ", options: .regularExpression)
     }
 
     nonisolated private func decodeEntities(_ s: String) -> String {
